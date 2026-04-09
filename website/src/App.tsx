@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { portfolioLinks, steamMedia } from './content';
 
 const { carouselImages, logo, poster, storeUrl, trailer, widgetUrl } = steamMedia;
-const bSharpLogo = new URL('./assets/BSharp.png', import.meta.url).href;
+const benBayleyIcon = new URL('./assets/BenBayleyIcon.png', import.meta.url).href;
 const carouselIntervalMs = 4000;
+const trailerFocusVolume = 0.35;
 
 function SteamImageCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -54,13 +55,14 @@ function SteamImageCarousel() {
 function App() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [isTrailerFocused, setIsTrailerFocused] = useState(false);
+  const [trailerVolume, setTrailerVolume] = useState(trailerFocusVolume);
 
   function watchTrailer() {
     const heroVideo = heroVideoRef.current;
 
     if (heroVideo) {
       heroVideo.muted = false;
-      heroVideo.volume = 1;
+      heroVideo.volume = trailerVolume;
       void heroVideo.play();
     }
 
@@ -77,6 +79,17 @@ function App() {
     setIsTrailerFocused(false);
   }
 
+  function changeTrailerVolume(volume: number) {
+    const heroVideo = heroVideoRef.current;
+
+    setTrailerVolume(volume);
+
+    if (heroVideo) {
+      heroVideo.volume = volume;
+      heroVideo.muted = volume === 0;
+    }
+  }
+
   return (
     <div>
       <a className="skip-link" href="#latest-project">
@@ -85,7 +98,7 @@ function App() {
 
       <header className="topbar">
         <a href="#latest-project" className="brand-mark" aria-label="Ben Bayley portfolio home">
-          <img src={bSharpLogo} alt="Ben Bayley" />
+          <img src={benBayleyIcon} alt="Ben Bayley" />
         </a>
         <nav className="topbar-links" aria-label="Primary">
           <a href="#latest-project">Zon</a>
@@ -134,13 +147,26 @@ function App() {
                 Watch the trailer
               </a>
             </div>
-            <p className="steam-note">Trailer, screenshots, wishlist, and release updates live on Steam.</p>
           </div>
 
           {isTrailerFocused ? (
-            <button className="hero-overlay-toggle restore-overlay-button" type="button" onClick={restoreHeroOverlay}>
-              Show overlay
-            </button>
+            <>
+              <label className="hero-volume-control">
+                <span>Volume</span>
+                <input
+                  aria-label="Trailer volume"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={trailerVolume}
+                  onChange={(event) => changeTrailerVolume(event.currentTarget.valueAsNumber)}
+                />
+              </label>
+              <button className="hero-overlay-toggle restore-overlay-button" type="button" onClick={restoreHeroOverlay}>
+                Show overlay
+              </button>
+            </>
           ) : (
             <button className="hero-overlay-toggle watch-trailer-button" type="button" onClick={watchTrailer}>
               Hide overlay
@@ -150,7 +176,6 @@ function App() {
 
         <section className="project-showcase" aria-label="Zon project media">
           <div className="gallery-heading">
-            <img src={logo} alt="" aria-hidden="true" />
             <a href={storeUrl} target="_blank" rel="noreferrer">
               Latest project on Steam
             </a>
@@ -185,7 +210,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <img src={bSharpLogo} alt="Ben Bayley" />
+        <img src={benBayleyIcon} alt="Ben Bayley" />
         <div>
           <p>Copyright Ben Bayley</p>
           <a href={portfolioLinks.itch} target="_blank" rel="noreferrer">

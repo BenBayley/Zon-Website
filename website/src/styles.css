@@ -164,7 +164,7 @@ a:hover {
 .hero-logo {
   filter: drop-shadow(0 0 1.4rem rgba(28, 251, 255, 0.56));
   margin-bottom: 1rem;
-  width: min(44rem, 82vw);
+  width: min(32rem, 82vw);
 }
 
 .tagline {
@@ -242,6 +242,32 @@ a:hover {
 .restore-overlay-button {
   bottom: auto;
   top: clamp(5rem, 9vw, 8rem);
+}
+
+.hero-volume-control {
+  align-items: center;
+  background: rgba(2, 2, 3, 0.76);
+  border: 1px solid rgba(247, 251, 255, 0.42);
+  border-radius: 8px;
+  bottom: clamp(1rem, 4vw, 4rem);
+  color: #f7fbff;
+  display: flex;
+  gap: 0.7rem;
+  left: clamp(1rem, 5vw, 6rem);
+  padding: 0.7rem 0.85rem;
+  position: absolute;
+  z-index: 5;
+}
+
+.hero-volume-control span {
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.hero-volume-control input {
+  accent-color: #41ffb0;
+  width: min(11rem, 40vw);
 }
 
 .portfolio-kicker {
@@ -418,9 +444,9 @@ a:hover {
 }
 
 .steam-widget-panel {
-  aspect-ratio: 646 / 190;
-  background: #08080a;
-  border: 1px solid rgba(247, 251, 255, 0.16);
+  aspect-ratio: 900/ 190;
+  background: #08080;
+  /*border: 1px solid rgba(247, 251, 255, 0.16);*/
   border-radius: 8px;
   overflow: hidden;
 }
@@ -444,7 +470,7 @@ a:hover {
   align-items: center;
   background:
     linear-gradient(120deg, rgba(8, 8, 10, 0.94), rgba(8, 8, 10, 0.72)),
-    url('./assets/BSharp.png') center / cover;
+    url('./assets/BSharpHeader.png') center / cover;
   border: 1px solid rgba(247, 251, 255, 0.16);
   border-radius: 8px;
   display: flex;

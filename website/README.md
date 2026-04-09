@@ -14,6 +14,22 @@ npm install
 npm run dev
 ```
 
+## Share with Cloudflare Tunnel
+For a temporary public link from your machine:
+
+```powershell
+cd website
+npm install
+npm run share
+```
+
+The script starts Vite on `http://127.0.0.1:5173/` if needed, then runs a Cloudflare Tunnel.
+Copy the `https://*.trycloudflare.com` URL printed by `cloudflared` and send it to people you want to show the site to.
+
+Vite is configured to allow `*.trycloudflare.com` hosts for this share workflow.
+
+Prerequisite: `cloudflared` must be installed and available on PATH.
+
 ## Build
 ```bash
 cd website

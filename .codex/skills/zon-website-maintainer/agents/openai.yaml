@@ -1,0 +1,4 @@
+interface:
+  display_name: "Zon Website Maintainer"
+  short_description: "Maintain and review the Zon Vite portfolio site"
+  default_prompt: "Use $zon-website-maintainer to implement, review, test, or troubleshoot the Zon website."
