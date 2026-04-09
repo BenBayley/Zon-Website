@@ -75,10 +75,14 @@ function SteamImageCarousel() {
         <span>See more images</span>
       </a>
       <button className="carousel-button carousel-button-previous" type="button" onClick={showPreviousImage} aria-label="Show previous image">
-        &lsaquo;
+        <span className="carousel-button-glyph" aria-hidden="true">
+          &lsaquo;
+        </span>
       </button>
       <button className="carousel-button carousel-button-next" type="button" onClick={showNextImage} aria-label="Show next image">
-        &rsaquo;
+        <span className="carousel-button-glyph" aria-hidden="true">
+          &rsaquo;
+        </span>
       </button>
       <div className="carousel-dots" aria-hidden="true">
         {carouselImages.map((image, index) => (
@@ -142,7 +146,7 @@ function App() {
     let currentRotateY = 0;
     let targetRotateX = 0;
     let targetRotateY = 0;
-    const maxTilt = 26;
+    const maxTilt = 38;
     const deadZonePx = 8;
     const maxDragDistancePx = 220;
 

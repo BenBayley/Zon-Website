@@ -476,9 +476,22 @@ a:hover {
   width: 3rem;
 }
 
-.carousel-button:hover {
+.carousel-button-glyph {
+  display: block;
+  line-height: 1;
+  transform: translateY(-0.06em);
+}
+
+.carousel-button:active {
   background: #41ffb0;
   color: #020203;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carousel-button:hover {
+    background: #41ffb0;
+    color: #020203;
+  }
 }
 
 .carousel-button-previous {
