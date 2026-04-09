@@ -166,7 +166,6 @@ a:hover {
   --logo-tilt-x: 0deg;
   --logo-tilt-y: 0deg;
   backface-visibility: hidden;
-  contain: paint;
   display: inline-block;
   margin: 0 0 1.2rem;
   transform: perspective(1000px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y));
@@ -182,9 +181,9 @@ a:hover {
 .hero-logo {
   backface-visibility: hidden;
   filter:
-    drop-shadow(0 0 0.48rem rgba(247, 251, 255, 0.23))
-    drop-shadow(0 0 1.3rem rgba(28, 251, 255, 0.38))
-    drop-shadow(0 0 1.9rem rgba(65, 255, 176, 0.14))
+    drop-shadow(0 0 0.42rem rgba(247, 251, 255, 0.22))
+    drop-shadow(0 0 1.1rem rgba(28, 251, 255, 0.34))
+    drop-shadow(0 0 1.5rem rgba(65, 255, 176, 0.1))
     drop-shadow(0 0.55rem 1.25rem rgba(2, 2, 3, 0.52));
   margin-bottom: 0;
   transform: translateZ(34px) scale(1.02);
@@ -195,9 +194,9 @@ a:hover {
 
 .hero-logo-link:hover .hero-logo {
   filter:
-    drop-shadow(0 0 0.56rem rgba(247, 251, 255, 0.26))
-    drop-shadow(0 0 1.55rem rgba(28, 251, 255, 0.42))
-    drop-shadow(0 0 2.25rem rgba(65, 255, 176, 0.18))
+    drop-shadow(0 0 0.5rem rgba(247, 251, 255, 0.24))
+    drop-shadow(0 0 1.35rem rgba(28, 251, 255, 0.38))
+    drop-shadow(0 0 1.8rem rgba(65, 255, 176, 0.14))
     drop-shadow(0 0.7rem 1.45rem rgba(2, 2, 3, 0.56));
   transform: translateZ(48px) scale(1.035);
 }
