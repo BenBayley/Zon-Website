@@ -181,10 +181,10 @@ a:hover {
 .hero-logo {
   backface-visibility: hidden;
   filter:
-    drop-shadow(0 0 0.42rem rgba(247, 251, 255, 0.22))
-    drop-shadow(0 0 1.1rem rgba(28, 251, 255, 0.34))
-    drop-shadow(0 0 1.5rem rgba(65, 255, 176, 0.1))
-    drop-shadow(0 0.55rem 1.25rem rgba(2, 2, 3, 0.52));
+    drop-shadow(0 0 0.48rem rgba(247, 251, 255, 0.24))
+    drop-shadow(0 0 1.28rem rgba(28, 251, 255, 0.38))
+    drop-shadow(0 0 1.85rem rgba(65, 255, 176, 0.12))
+    drop-shadow(0 0.6rem 1.34rem rgba(2, 2, 3, 0.55));
   margin-bottom: 0;
   transform: translateZ(34px) scale(1.02);
   transform-origin: center;
