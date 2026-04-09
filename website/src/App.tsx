@@ -9,6 +9,17 @@ const trailerFocusVolume = 0.35;
 
 function SteamImageCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const carouselIntervalRef = useRef<number | undefined>(undefined);
+
+  function restartCarouselInterval() {
+    if (carouselIntervalRef.current !== undefined) {
+      window.clearInterval(carouselIntervalRef.current);
+    }
+
+    carouselIntervalRef.current = window.setInterval(() => {
+      setActiveIndex((currentIndex) => (currentIndex + 1) % carouselImages.length);
+    }, carouselIntervalMs);
+  }
 
   function tiltCarousel(event: PointerEvent<HTMLElement>) {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -27,20 +38,24 @@ function SteamImageCarousel() {
   }
 
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setActiveIndex((currentIndex) => (currentIndex + 1) % carouselImages.length);
-    }, carouselIntervalMs);
+    restartCarouselInterval();
 
-    return () => window.clearInterval(intervalId);
+    return () => {
+      if (carouselIntervalRef.current !== undefined) {
+        window.clearInterval(carouselIntervalRef.current);
+      }
+    };
   }, []);
 
   function showPreviousImage() {
+    restartCarouselInterval();
     setActiveIndex((currentIndex) => (
       currentIndex === 0 ? carouselImages.length - 1 : currentIndex - 1
     ));
   }
 
   function showNextImage() {
+    restartCarouselInterval();
     setActiveIndex((currentIndex) => (currentIndex + 1) % carouselImages.length);
   }
 
@@ -123,41 +138,76 @@ function App() {
     let isTouchActive = false;
     let settleTimeoutId: number | undefined;
     let animationFrameId: number | undefined;
+    let currentRotateX = 0;
+    let currentRotateY = 0;
+    let targetRotateX = 0;
+    let targetRotateY = 0;
     const maxTilt = 26;
+    const deadZonePx = 8;
+    const maxDragDistancePx = 220;
+
+    function normalizeTouchOffset(offset: number) {
+      const absOffset = Math.abs(offset);
+
+      if (absOffset <= deadZonePx) {
+        return 0;
+      }
+
+      const normalizedOffset = (absOffset - deadZonePx) / (maxDragDistancePx - deadZonePx);
+      const clampedOffset = Math.min(1, normalizedOffset);
+      return Math.sign(offset) * Math.pow(clampedOffset, 1.15);
+    }
 
     function settleHeroLogo() {
-      mobileHeroLogoLink.style.setProperty('--logo-tilt-x', '0deg');
-      mobileHeroLogoLink.style.setProperty('--logo-tilt-y', '0deg');
+      queueHeroLogoTilt(0, 0);
+    }
+
+    function renderHeroLogoTilt() {
+      currentRotateX += (targetRotateX - currentRotateX) * 0.1;
+      currentRotateY += (targetRotateY - currentRotateY) * 0.1;
+
+      mobileHeroLogoLink.style.setProperty('--logo-tilt-x', `${currentRotateX.toFixed(2)}deg`);
+      mobileHeroLogoLink.style.setProperty('--logo-tilt-y', `${currentRotateY.toFixed(2)}deg`);
+
+      const isSettled = Math.abs(targetRotateX - currentRotateX) < 0.02
+        && Math.abs(targetRotateY - currentRotateY) < 0.02;
+
+      if (isSettled) {
+        currentRotateX = targetRotateX;
+        currentRotateY = targetRotateY;
+        mobileHeroLogoLink.style.setProperty('--logo-tilt-x', `${currentRotateX.toFixed(2)}deg`);
+        mobileHeroLogoLink.style.setProperty('--logo-tilt-y', `${currentRotateY.toFixed(2)}deg`);
+        animationFrameId = undefined;
+        return;
+      }
+
+      animationFrameId = window.requestAnimationFrame(renderHeroLogoTilt);
     }
 
     function queueHeroLogoTilt(rawRotateX: number, rawRotateY: number) {
-      if (animationFrameId !== undefined) {
-        window.cancelAnimationFrame(animationFrameId);
+      const vectorMagnitude = Math.hypot(rawRotateX, rawRotateY);
+      const clampScale = vectorMagnitude > maxTilt ? maxTilt / vectorMagnitude : 1;
+      targetRotateX = rawRotateX * clampScale;
+      targetRotateY = rawRotateY * clampScale;
+
+      if (animationFrameId === undefined) {
+        animationFrameId = window.requestAnimationFrame(renderHeroLogoTilt);
       }
 
-      animationFrameId = window.requestAnimationFrame(() => {
-        const vectorMagnitude = Math.hypot(rawRotateX, rawRotateY);
-        const clampScale = vectorMagnitude > maxTilt ? maxTilt / vectorMagnitude : 1;
-        const rotateX = rawRotateX * clampScale;
-        const rotateY = rawRotateY * clampScale;
+      if (settleTimeoutId !== undefined) {
+        window.clearTimeout(settleTimeoutId);
+      }
 
-        mobileHeroLogoLink.style.setProperty('--logo-tilt-x', `${rotateX.toFixed(2)}deg`);
-        mobileHeroLogoLink.style.setProperty('--logo-tilt-y', `${rotateY.toFixed(2)}deg`);
-
-        if (settleTimeoutId !== undefined) {
-          window.clearTimeout(settleTimeoutId);
-        }
-
-        if (!isTouchActive) {
-          settleTimeoutId = window.setTimeout(settleHeroLogo, 320);
-        }
-      });
+      if (!isTouchActive) {
+        settleTimeoutId = window.setTimeout(settleHeroLogo, 320);
+      }
     }
 
     function handleTouchStart(event: TouchEvent) {
       isTouchActive = true;
       touchStartX = event.touches[0]?.clientX;
       touchStartY = event.touches[0]?.clientY;
+      mobileHeroLogoLink.classList.add('is-mobile-tilting');
 
       if (settleTimeoutId !== undefined) {
         window.clearTimeout(settleTimeoutId);
@@ -186,13 +236,17 @@ function App() {
         return;
       }
 
-      queueHeroLogoTilt(touchOffsetY * 0.45, touchOffsetX * 0.4);
+      const normalizedOffsetX = normalizeTouchOffset(touchOffsetX);
+      const normalizedOffsetY = normalizeTouchOffset(touchOffsetY);
+
+      queueHeroLogoTilt(normalizedOffsetY * maxTilt, normalizedOffsetX * (maxTilt * 0.9));
     }
 
     function handleTouchEnd() {
       isTouchActive = false;
       touchStartX = undefined;
       touchStartY = undefined;
+      mobileHeroLogoLink.classList.remove('is-mobile-tilting');
 
       if (settleTimeoutId !== undefined) {
         window.clearTimeout(settleTimeoutId);

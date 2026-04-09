@@ -165,6 +165,8 @@ a:hover {
 .hero-logo-link {
   --logo-tilt-x: 0deg;
   --logo-tilt-y: 0deg;
+  backface-visibility: hidden;
+  contain: paint;
   display: inline-block;
   margin: 0 0 1.2rem;
   transform: perspective(1000px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y));
@@ -178,10 +180,12 @@ a:hover {
 }
 
 .hero-logo {
+  backface-visibility: hidden;
   filter:
-    drop-shadow(0 0 0.35rem rgba(247, 251, 255, 0.18))
-    drop-shadow(0 0 1rem rgba(28, 251, 255, 0.28))
-    drop-shadow(0 0.35rem 0.9rem rgba(2, 2, 3, 0.46));
+    drop-shadow(0 0 0.48rem rgba(247, 251, 255, 0.23))
+    drop-shadow(0 0 1.3rem rgba(28, 251, 255, 0.38))
+    drop-shadow(0 0 1.9rem rgba(65, 255, 176, 0.14))
+    drop-shadow(0 0.55rem 1.25rem rgba(2, 2, 3, 0.52));
   margin-bottom: 0;
   transform: translateZ(34px) scale(1.02);
   transform-origin: center;
@@ -191,9 +195,10 @@ a:hover {
 
 .hero-logo-link:hover .hero-logo {
   filter:
-    drop-shadow(0 0 0.45rem rgba(247, 251, 255, 0.22))
-    drop-shadow(0 0 1.2rem rgba(28, 251, 255, 0.34))
-    drop-shadow(0 0.55rem 1.25rem rgba(2, 2, 3, 0.52));
+    drop-shadow(0 0 0.56rem rgba(247, 251, 255, 0.26))
+    drop-shadow(0 0 1.55rem rgba(28, 251, 255, 0.42))
+    drop-shadow(0 0 2.25rem rgba(65, 255, 176, 0.18))
+    drop-shadow(0 0.7rem 1.45rem rgba(2, 2, 3, 0.56));
   transform: translateZ(48px) scale(1.035);
 }
 
@@ -615,6 +620,7 @@ a:hover {
 
   .hero-logo-link {
     transform: perspective(700px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y));
+    transition: none;
   }
 
   .hero-logo-link:hover {
@@ -622,11 +628,20 @@ a:hover {
   }
 
   .hero-logo {
-    transform: translateZ(52px) scale(1.02);
+    transform: scale(1.02);
+    transition: none;
   }
 
   .hero-logo-link:hover .hero-logo {
-    transform: translateZ(72px) scale(1.04);
+    transform: scale(1.04);
+  }
+
+  .hero-logo-link.is-mobile-tilting {
+    will-change: transform;
+  }
+
+  .hero-logo-link.is-mobile-tilting .hero-logo {
+    transform: scale(1.015);
   }
 
   .tagline {
