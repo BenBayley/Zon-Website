@@ -1,0 +1,229 @@
+import { useEffect, useRef, useState } from 'react';
+import { portfolioLinks, steamMedia } from './content';
+
+const { carouselImages, logo, poster, storeUrl, trailer, widgetUrl } = steamMedia;
+const benBayleyIcon = new URL('./assets/BenBayleyIconCurrent.png', import.meta.url).href;
+const carouselIntervalMs = 4000;
+const trailerFocusVolume = 0.35;
+
+function SteamImageCarousel() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setActiveIndex((currentIndex) => (currentIndex + 1) % carouselImages.length);
+    }, carouselIntervalMs);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  function showPreviousImage() {
+    setActiveIndex((currentIndex) => (
+      currentIndex === 0 ? carouselImages.length - 1 : currentIndex - 1
+    ));
+  }
+
+  function showNextImage() {
+    setActiveIndex((currentIndex) => (currentIndex + 1) % carouselImages.length);
+  }
+
+  return (
+    <article className="image-carousel-card" aria-label="See more Zon images">
+      <a className="carousel-viewport" href={storeUrl} target="_blank" rel="noreferrer">
+        <div className="carousel-track" style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
+          {carouselImages.map((image, index) => (
+            <img key={image.image} src={image.image} alt={image.alt} loading={index === 0 ? 'eager' : 'lazy'} />
+          ))}
+        </div>
+        <span>See more images</span>
+      </a>
+      <button className="carousel-button carousel-button-previous" type="button" onClick={showPreviousImage} aria-label="Show previous image">
+        &lsaquo;
+      </button>
+      <button className="carousel-button carousel-button-next" type="button" onClick={showNextImage} aria-label="Show next image">
+        &rsaquo;
+      </button>
+      <div className="carousel-dots" aria-hidden="true">
+        {carouselImages.map((image, index) => (
+          <span key={image.image} className={index === activeIndex ? 'is-active' : undefined} />
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function App() {
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const [isTrailerFocused, setIsTrailerFocused] = useState(false);
+  const [trailerVolume, setTrailerVolume] = useState(trailerFocusVolume);
+
+  function watchTrailer() {
+    const heroVideo = heroVideoRef.current;
+
+    if (heroVideo) {
+      heroVideo.muted = false;
+      heroVideo.volume = trailerVolume;
+      void heroVideo.play();
+    }
+
+    setIsTrailerFocused(true);
+  }
+
+  function restoreHeroOverlay() {
+    const heroVideo = heroVideoRef.current;
+
+    if (heroVideo) {
+      heroVideo.muted = true;
+    }
+
+    setIsTrailerFocused(false);
+  }
+
+  function changeTrailerVolume(volume: number) {
+    const heroVideo = heroVideoRef.current;
+
+    setTrailerVolume(volume);
+
+    if (heroVideo) {
+      heroVideo.volume = volume;
+      heroVideo.muted = volume === 0;
+    }
+  }
+
+  return (
+    <div>
+      <a className="skip-link" href="#latest-project">
+        Skip to latest project
+      </a>
+
+      <header className="topbar">
+        <a href="#latest-project" className="brand-mark" aria-label="Ben Bayley portfolio home">
+          <img src={benBayleyIcon} alt="Ben Bayley" />
+        </a>
+        <nav className="topbar-links" aria-label="Primary">
+          <a href="#latest-project">Zon</a>
+          <a href="#other-games">Itch.io</a>
+          <a href={storeUrl} target="_blank" rel="noreferrer">
+            Steam
+          </a>
+          <a href={portfolioLinks.itch} className="nav-cta" target="_blank" rel="noreferrer">
+            Games
+          </a>
+        </nav>
+      </header>
+
+      <main>
+        <section id="latest-project" className={`hero ${isTrailerFocused ? 'is-trailer-focused' : ''}`} aria-label="Ben Bayley latest project, Zon">
+          <div className="hero-backdrop" aria-hidden="true">
+            <img className="hero-poster" src={poster} alt="" />
+            <video
+              ref={heroVideoRef}
+              className="hero-video"
+              autoPlay
+              controls={isTrailerFocused}
+              loop
+              muted={!isTrailerFocused}
+              playsInline
+              poster={poster}
+              preload="auto"
+            >
+              <source src={trailer.webm} type="video/webm" />
+              <source src={trailer.mp4} type="video/mp4" />
+            </video>
+          </div>
+          <div className={`hero-shade ${isTrailerFocused ? 'is-hidden' : ''}`} aria-hidden="true" />
+
+          <div className={`hero-content ${isTrailerFocused ? 'is-hidden' : ''}`}>
+            <p className="portfolio-kicker">Ben Bayley portfolio / latest project</p>
+            <a href={storeUrl} target="_blank" rel="noreferrer" aria-label="Wishlist Zon on Steam">
+              <img className="hero-logo" src={logo} alt="Zon" />
+            </a>
+            <p className="tagline">Bullet hell. Base warfare. Neon chaos.</p>
+            <div className="hero-actions">
+              <a className="btn btn-primary" href={storeUrl} target="_blank" rel="noreferrer">
+                Wishlist on Steam
+              </a>
+              <button className="btn btn-secondary" type="button" onClick={watchTrailer}>
+                Watch trailer
+              </button>
+            </div>
+          </div>
+
+          {isTrailerFocused ? (
+            <>
+              <label className="hero-volume-control">
+                <span>Volume</span>
+                <input
+                  aria-label="Trailer volume"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={trailerVolume}
+                  onChange={(event) => changeTrailerVolume(event.currentTarget.valueAsNumber)}
+                />
+              </label>
+              <div className="focused-trailer-actions">
+                <a className="focused-trailer-link" href={storeUrl} target="_blank" rel="noreferrer">
+                  Watch on Steam
+                </a>
+                <button className="focused-trailer-button" type="button" onClick={restoreHeroOverlay}>
+                  Show overlay
+                </button>
+              </div>
+            </>
+          ) : null}
+        </section>
+
+        <section className="project-showcase" aria-label="Zon project media">
+          <div className="gallery-heading">
+            <a href={storeUrl} target="_blank" rel="noreferrer">
+              Latest project on Steam
+            </a>
+          </div>
+
+          <div className="project-media">
+            <SteamImageCarousel />
+          </div>
+
+          <div className="steam-callout">
+            <div className="steam-widget-panel">
+              <iframe src={widgetUrl} title="Wishlist Zon on Steam" loading="lazy" />
+            </div>
+            <a className="wishlist-fallback" href={storeUrl} target="_blank" rel="noreferrer">
+              Wishlist directly on Steam
+            </a>
+          </div>
+        </section>
+
+        <section id="other-games" className="other-games" aria-label="Other games by Ben Bayley">
+          <div className="itch-card">
+            <div>
+              <p className="portfolio-kicker">Other games</p>
+              <h2>More from Ben Bayley</h2>
+              <p>Small experiments, playable builds, and earlier games live on itch.io.</p>
+            </div>
+            <a className="btn btn-primary" href={portfolioLinks.itch} target="_blank" rel="noreferrer">
+              Open itch.io
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer className="footer">
+        <img src={benBayleyIcon} alt="Ben Bayley" />
+        <div>
+          <p>Copyright Ben Bayley</p>
+          <a href={portfolioLinks.itch} target="_blank" rel="noreferrer">
+            itch.io
+          </a>
+          <a href={storeUrl} target="_blank" rel="noreferrer">
+            Zon on Steam
+          </a>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+export default App;
