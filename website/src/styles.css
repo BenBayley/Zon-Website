@@ -212,36 +212,35 @@ a:hover {
   margin: 1rem 0 0;
 }
 
-.hero-overlay-toggle {
+.focused-trailer-actions {
+  bottom: clamp(1rem, 4vw, 4rem);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  position: absolute;
+  right: clamp(1rem, 5vw, 6rem);
+  z-index: 5;
+}
+
+.focused-trailer-link,
+.focused-trailer-button {
   background: rgba(2, 2, 3, 0.76);
   border: 1px solid rgba(247, 251, 255, 0.62);
   border-radius: 8px;
-  bottom: clamp(1rem, 4vw, 4rem);
   color: #f7fbff;
   cursor: pointer;
   font: inherit;
   font-weight: 900;
   padding: 0.85rem 1.05rem;
-  position: absolute;
-  right: clamp(1rem, 5vw, 6rem);
   text-transform: uppercase;
-  transition: background 180ms ease, color 180ms ease, opacity 260ms ease, transform 180ms ease;
-  z-index: 5;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-.hero-overlay-toggle:hover {
+.focused-trailer-link:hover,
+.focused-trailer-button:hover {
   background: #41ffb0;
   color: #020203;
   transform: translateY(-1px);
-}
-
-.watch-trailer-button {
-  box-shadow: 0 0 1rem rgba(65, 255, 176, 0.24);
-}
-
-.restore-overlay-button {
-  bottom: auto;
-  top: clamp(5rem, 9vw, 8rem);
 }
 
 .hero-volume-control {
@@ -525,21 +524,12 @@ a:hover {
 }
 
 @media (max-width: 720px) {
-  .topbar {
-    align-items: flex-end;
-    flex-direction: column;
-    gap: 0.7rem;
-  }
-
   .brand-mark img {
     max-height: 2.2rem;
   }
 
   .topbar-links {
-    gap: 0.45rem 0.85rem;
-    justify-content: flex-end;
-    text-align: right;
-    width: 100%;
+    gap: 0.45rem 0.7rem;
   }
 
   .topbar-links a {
@@ -549,7 +539,7 @@ a:hover {
   .hero {
     min-height: auto;
     padding-bottom: 2.5rem;
-    padding-top: 9rem;
+    padding-top: 7rem;
   }
 
   .hero-logo {
@@ -564,8 +554,45 @@ a:hover {
     font-size: 0.88rem;
   }
 
-  .hero-overlay-toggle,
   .hero-volume-control {
+    display: none;
+  }
+
+  .focused-trailer-actions {
+    bottom: 1rem;
+    justify-content: flex-end;
+    right: 1rem;
+  }
+
+  .focused-trailer-link,
+  .focused-trailer-button {
+    font-size: 0.72rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .hero.is-trailer-focused {
+    background: #020203;
+    min-height: 100svh;
+    padding: 0;
+  }
+
+  .hero.is-trailer-focused .hero-backdrop {
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  .hero.is-trailer-focused .hero-poster,
+  .hero.is-trailer-focused .hero-video {
+    height: 100%;
+    inset: 0;
+    object-fit: contain;
+    position: absolute;
+    width: 100%;
+  }
+
+  .hero.is-trailer-focused .hero-poster {
     display: none;
   }
 
@@ -610,6 +637,10 @@ a:hover {
 
   .gallery-heading {
     align-items: flex-end;
+  }
+
+  .steam-callout {
+    margin-top: 2.5rem;
   }
 
   .steam-widget-panel {

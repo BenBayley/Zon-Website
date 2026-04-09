@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { portfolioLinks, steamMedia } from './content';
 
 const { carouselImages, logo, poster, storeUrl, trailer, widgetUrl } = steamMedia;
-const benBayleyIcon = new URL('./assets/BenBayleyIcon.png', import.meta.url).href;
+const benBayleyIcon = new URL('./assets/BenBayleyIconCurrent.png', import.meta.url).href;
 const carouselIntervalMs = 4000;
 const trailerFocusVolume = 0.35;
 
@@ -113,7 +113,7 @@ function App() {
       </header>
 
       <main>
-        <section id="latest-project" className="hero" aria-label="Ben Bayley latest project, Zon">
+        <section id="latest-project" className={`hero ${isTrailerFocused ? 'is-trailer-focused' : ''}`} aria-label="Ben Bayley latest project, Zon">
           <div className="hero-backdrop" aria-hidden="true">
             <img className="hero-poster" src={poster} alt="" />
             <video
@@ -143,9 +143,9 @@ function App() {
               <a className="btn btn-primary" href={storeUrl} target="_blank" rel="noreferrer">
                 Wishlist on Steam
               </a>
-              <a className="btn btn-secondary" href={storeUrl} target="_blank" rel="noreferrer">
-                Watch the trailer
-              </a>
+              <button className="btn btn-secondary" type="button" onClick={watchTrailer}>
+                Watch trailer
+              </button>
             </div>
           </div>
 
@@ -163,15 +163,16 @@ function App() {
                   onChange={(event) => changeTrailerVolume(event.currentTarget.valueAsNumber)}
                 />
               </label>
-              <button className="hero-overlay-toggle restore-overlay-button" type="button" onClick={restoreHeroOverlay}>
-                Show overlay
-              </button>
+              <div className="focused-trailer-actions">
+                <a className="focused-trailer-link" href={storeUrl} target="_blank" rel="noreferrer">
+                  Watch on Steam
+                </a>
+                <button className="focused-trailer-button" type="button" onClick={restoreHeroOverlay}>
+                  Show overlay
+                </button>
+              </div>
             </>
-          ) : (
-            <button className="hero-overlay-toggle watch-trailer-button" type="button" onClick={watchTrailer}>
-              Hide overlay
-            </button>
-          )}
+          ) : null}
         </section>
 
         <section className="project-showcase" aria-label="Zon project media">
