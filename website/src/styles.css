@@ -183,15 +183,20 @@ a:hover {
 }
 
 .btn {
+  border: 1px solid transparent;
   display: inline-block;
   border-radius: 8px;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  cursor: pointer;
   font-weight: 900;
   padding: 0.85rem 1.05rem;
   text-transform: uppercase;
-  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-.btn:hover {
+.btn:hover,
+.btn:focus-visible {
+  box-shadow: 0 0 0 1px rgba(247, 251, 255, 0.18), 0 0.8rem 1.6rem rgba(0, 0, 0, 0.34);
   transform: translateY(-1px);
 }
 
@@ -200,9 +205,22 @@ a:hover {
   color: #020203;
 }
 
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: #6bffc2;
+  color: #020203;
+}
+
 .btn-secondary {
   background: rgba(2, 2, 3, 0.64);
   border: 1px solid rgba(247, 251, 255, 0.62);
+  color: #f7fbff;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus-visible {
+  background: rgba(12, 12, 16, 0.9);
+  border-color: rgba(247, 251, 255, 0.82);
   color: #f7fbff;
 }
 
