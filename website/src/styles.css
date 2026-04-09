@@ -146,6 +146,7 @@ a:hover {
 .hero-content {
   max-width: 48rem;
   opacity: 1;
+  position: relative;
   transform: translateY(0);
   transition: opacity 260ms ease, transform 360ms ease, visibility 260ms ease;
 }
@@ -161,10 +162,39 @@ a:hover {
   visibility: hidden;
 }
 
+.hero-logo-link {
+  --logo-tilt-x: 0deg;
+  --logo-tilt-y: 0deg;
+  display: inline-block;
+  margin: 0 0 1.2rem;
+  transform: perspective(1000px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y));
+  transform-style: preserve-3d;
+  transition: transform 140ms ease-out;
+  will-change: transform;
+}
+
+.hero-logo-link:hover {
+  transform: perspective(1000px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y)) translateY(-3px);
+}
+
 .hero-logo {
-  filter: drop-shadow(0 0 1.4rem rgba(28, 251, 255, 0.56));
-  margin-bottom: 1rem;
-  width: min(32rem, 82vw);
+  filter:
+    drop-shadow(0 0 0.35rem rgba(247, 251, 255, 0.18))
+    drop-shadow(0 0 1rem rgba(28, 251, 255, 0.28))
+    drop-shadow(0 0.35rem 0.9rem rgba(2, 2, 3, 0.46));
+  margin-bottom: 0;
+  transform: translateZ(34px) scale(1.02);
+  transform-origin: center;
+  transition: filter 140ms ease-out, transform 140ms ease-out;
+  width: min(31.5rem, 80vw);
+}
+
+.hero-logo-link:hover .hero-logo {
+  filter:
+    drop-shadow(0 0 0.45rem rgba(247, 251, 255, 0.22))
+    drop-shadow(0 0 1.2rem rgba(28, 251, 255, 0.34))
+    drop-shadow(0 0.55rem 1.25rem rgba(2, 2, 3, 0.52));
+  transform: translateZ(48px) scale(1.035);
 }
 
 .tagline {
@@ -328,8 +358,9 @@ a:hover {
 .steam-image-link,
 .image-carousel-card {
   background: #08080a;
-  border-radius: 8px;
+  border-radius: 16px;
   color: #f7fbff;
+  perspective: 1000px;
   overflow: hidden;
   position: relative;
 }
@@ -337,6 +368,20 @@ a:hover {
 .steam-image-link,
 .image-carousel-card {
   aspect-ratio: 16 / 9;
+}
+
+.image-carousel-card {
+  --carousel-tilt-x: 0deg;
+  --carousel-tilt-y: 0deg;
+  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.26);
+  transform: perspective(1000px) rotateX(var(--carousel-tilt-x)) rotateY(var(--carousel-tilt-y));
+  transform-style: preserve-3d;
+  transition: box-shadow 160ms ease, transform 160ms ease-out;
+  will-change: transform;
+}
+
+.image-carousel-card:hover {
+  box-shadow: 0 1rem 2.4rem rgba(0, 0, 0, 0.34);
 }
 
 .steam-image-link img {
@@ -366,10 +411,13 @@ a:hover {
 }
 
 .carousel-viewport {
+  border-radius: 16px;
   color: #f7fbff;
   display: block;
   height: 100%;
   overflow: hidden;
+  transform: translateZ(18px);
+  transform-style: preserve-3d;
 }
 
 .carousel-track {
@@ -392,6 +440,7 @@ a:hover {
   background:
     linear-gradient(90deg, rgba(2, 2, 3, 0.36), transparent 28%, transparent 72%, rgba(2, 2, 3, 0.36)),
     linear-gradient(180deg, transparent 56%, rgba(2, 2, 3, 0.42));
+  border-radius: 16px;
   content: '';
   inset: 0;
   pointer-events: none;
@@ -561,7 +610,23 @@ a:hover {
   }
 
   .hero-logo {
-    width: min(24rem, 92vw);
+    width: min(23.5rem, 88vw);
+  }
+
+  .hero-logo-link {
+    transform: perspective(700px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y));
+  }
+
+  .hero-logo-link:hover {
+    transform: perspective(700px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y)) translateY(-3px);
+  }
+
+  .hero-logo {
+    transform: translateZ(52px) scale(1.02);
+  }
+
+  .hero-logo-link:hover .hero-logo {
+    transform: translateZ(72px) scale(1.04);
   }
 
   .tagline {

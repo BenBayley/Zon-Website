@@ -1,3 +1,4 @@
+import type { PointerEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { portfolioLinks, steamMedia } from './content';
 
@@ -8,6 +9,22 @@ const trailerFocusVolume = 0.35;
 
 function SteamImageCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
+
+  function tiltCarousel(event: PointerEvent<HTMLElement>) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const relativeX = (event.clientX - bounds.left) / bounds.width;
+    const relativeY = (event.clientY - bounds.top) / bounds.height;
+    const rotateY = (relativeX - 0.5) * 5;
+    const rotateX = (0.5 - relativeY) * 4;
+
+    event.currentTarget.style.setProperty('--carousel-tilt-x', `${rotateX.toFixed(2)}deg`);
+    event.currentTarget.style.setProperty('--carousel-tilt-y', `${rotateY.toFixed(2)}deg`);
+  }
+
+  function resetCarouselTilt(event: PointerEvent<HTMLElement>) {
+    event.currentTarget.style.setProperty('--carousel-tilt-x', '0deg');
+    event.currentTarget.style.setProperty('--carousel-tilt-y', '0deg');
+  }
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -28,7 +45,12 @@ function SteamImageCarousel() {
   }
 
   return (
-    <article className="image-carousel-card" aria-label="See more Zon images">
+    <article
+      className="image-carousel-card"
+      aria-label="See more Zon images"
+      onPointerMove={tiltCarousel}
+      onPointerLeave={resetCarouselTilt}
+    >
       <a className="carousel-viewport" href={storeUrl} target="_blank" rel="noreferrer">
         <div className="carousel-track" style={{ transform: `translateX(-${activeIndex * 100}%)` }}>
           {carouselImages.map((image, index) => (
@@ -54,8 +76,151 @@ function SteamImageCarousel() {
 
 function App() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const heroLogoLinkRef = useRef<HTMLAnchorElement>(null);
   const [isTrailerFocused, setIsTrailerFocused] = useState(false);
   const [trailerVolume, setTrailerVolume] = useState(trailerFocusVolume);
+
+  function tiltHeroLogo(event: PointerEvent<HTMLAnchorElement>) {
+    if (event.pointerType === 'touch') {
+      return;
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const relativeX = (event.clientX - bounds.left) / bounds.width;
+    const relativeY = (event.clientY - bounds.top) / bounds.height;
+    const rotateY = (relativeX - 0.5) * 28;
+    const rotateX = (0.5 - relativeY) * 22;
+
+    event.currentTarget.style.setProperty('--logo-tilt-x', `${rotateX.toFixed(2)}deg`);
+    event.currentTarget.style.setProperty('--logo-tilt-y', `${rotateY.toFixed(2)}deg`);
+  }
+
+  function resetHeroLogoTilt(event: PointerEvent<HTMLAnchorElement>) {
+    if (event.pointerType === 'touch') {
+      return;
+    }
+
+    event.currentTarget.style.setProperty('--logo-tilt-x', '0deg');
+    event.currentTarget.style.setProperty('--logo-tilt-y', '0deg');
+  }
+
+  useEffect(() => {
+    const heroLogoLink = heroLogoLinkRef.current;
+    const mobilePointerQuery = window.matchMedia('(pointer: coarse)');
+    const mobileHoverQuery = window.matchMedia('(hover: none)');
+    const isMobileLike = window.innerWidth <= 720
+      || navigator.maxTouchPoints > 0
+      || mobilePointerQuery.matches
+      || mobileHoverQuery.matches;
+
+    if (!heroLogoLink || !isMobileLike) {
+      return undefined;
+    }
+
+    const mobileHeroLogoLink = heroLogoLink;
+    let touchStartX: number | undefined;
+    let touchStartY: number | undefined;
+    let isTouchActive = false;
+    let settleTimeoutId: number | undefined;
+    let animationFrameId: number | undefined;
+    const maxTilt = 26;
+
+    function settleHeroLogo() {
+      mobileHeroLogoLink.style.setProperty('--logo-tilt-x', '0deg');
+      mobileHeroLogoLink.style.setProperty('--logo-tilt-y', '0deg');
+    }
+
+    function queueHeroLogoTilt(rawRotateX: number, rawRotateY: number) {
+      if (animationFrameId !== undefined) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+
+      animationFrameId = window.requestAnimationFrame(() => {
+        const vectorMagnitude = Math.hypot(rawRotateX, rawRotateY);
+        const clampScale = vectorMagnitude > maxTilt ? maxTilt / vectorMagnitude : 1;
+        const rotateX = rawRotateX * clampScale;
+        const rotateY = rawRotateY * clampScale;
+
+        mobileHeroLogoLink.style.setProperty('--logo-tilt-x', `${rotateX.toFixed(2)}deg`);
+        mobileHeroLogoLink.style.setProperty('--logo-tilt-y', `${rotateY.toFixed(2)}deg`);
+
+        if (settleTimeoutId !== undefined) {
+          window.clearTimeout(settleTimeoutId);
+        }
+
+        if (!isTouchActive) {
+          settleTimeoutId = window.setTimeout(settleHeroLogo, 320);
+        }
+      });
+    }
+
+    function handleTouchStart(event: TouchEvent) {
+      isTouchActive = true;
+      touchStartX = event.touches[0]?.clientX;
+      touchStartY = event.touches[0]?.clientY;
+
+      if (settleTimeoutId !== undefined) {
+        window.clearTimeout(settleTimeoutId);
+        settleTimeoutId = undefined;
+      }
+    }
+
+    function handleTouchMove(event: TouchEvent) {
+      const touchX = event.touches[0]?.clientX;
+      const touchY = event.touches[0]?.clientY;
+
+      if (touchX === undefined || touchY === undefined) {
+        return;
+      }
+
+      if (touchStartX === undefined || touchStartY === undefined) {
+        touchStartX = touchX;
+        touchStartY = touchY;
+        return;
+      }
+
+      const touchOffsetX = touchX - touchStartX;
+      const touchOffsetY = touchY - touchStartY;
+
+      if (Math.abs(touchOffsetX) < 1 && Math.abs(touchOffsetY) < 1) {
+        return;
+      }
+
+      queueHeroLogoTilt(touchOffsetY * 0.45, touchOffsetX * 0.4);
+    }
+
+    function handleTouchEnd() {
+      isTouchActive = false;
+      touchStartX = undefined;
+      touchStartY = undefined;
+
+      if (settleTimeoutId !== undefined) {
+        window.clearTimeout(settleTimeoutId);
+      }
+
+      settleTimeoutId = window.setTimeout(settleHeroLogo, 180);
+    }
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchEnd);
+
+      if (settleTimeoutId !== undefined) {
+        window.clearTimeout(settleTimeoutId);
+      }
+
+      if (animationFrameId !== undefined) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, []);
 
   function watchTrailer() {
     const heroVideo = heroVideoRef.current;
@@ -135,7 +300,16 @@ function App() {
 
           <div className={`hero-content ${isTrailerFocused ? 'is-hidden' : ''}`}>
             <p className="portfolio-kicker">Ben Bayley portfolio / latest project</p>
-            <a href={storeUrl} target="_blank" rel="noreferrer" aria-label="Wishlist Zon on Steam">
+            <a
+              ref={heroLogoLinkRef}
+              className="hero-logo-link"
+              href={storeUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Wishlist Zon on Steam"
+              onPointerMove={tiltHeroLogo}
+              onPointerLeave={resetHeroLogoTilt}
+            >
               <img className="hero-logo" src={logo} alt="Zon" />
             </a>
             <p className="tagline">Bullet hell. Base warfare. Neon chaos.</p>
