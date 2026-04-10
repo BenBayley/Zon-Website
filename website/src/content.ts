@@ -1,9 +1,8 @@
 const steamAssetVersion = 't=1765913868';
-const heroLogo = new URL('../Vibrant ZON logo with gradient glow.png', import.meta.url).href;
 export const steamMedia = {
   storeUrl: 'https://store.steampowered.com/app/3651110/Zon/',
   widgetUrl: 'https://store.steampowered.com/widget/3651110/',
-  logo: heroLogo,
+  logo: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3651110/b3e075d7509b2465f985e257064de96975fb4e23/logo.png?${steamAssetVersion}`,
   poster: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3651110/e25ff7b65920fba918964b2152ce0b1c665f6520/header.jpg?${steamAssetVersion}`,
   trailer: {
     webm: 'https://video.cloudflare.steamstatic.com/store_trailers/257166496/movie_max_vp9.webm',
