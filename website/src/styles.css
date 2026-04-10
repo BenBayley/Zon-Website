@@ -623,16 +623,29 @@ a:hover {
   .hero {
     min-height: auto;
     padding-bottom: 2.5rem;
-    padding-top: 7rem;
+    padding-top: 8.2rem;
+  }
+
+  .hero-content {
+    margin-top: 0.9rem;
+  }
+
+  .portfolio-kicker {
+    margin-bottom: 0.7rem;
+    position: relative;
+    top: -2.2rem;
+  }
+
+  .hero-logo-link {
+    display: block;
+    margin: 0 auto 1.2rem;
+    width: fit-content;
+    transform: perspective(700px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y));
+    transition: none;
   }
 
   .hero-logo {
     width: min(23.5rem, 88vw);
-  }
-
-  .hero-logo-link {
-    transform: perspective(700px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y));
-    transition: none;
   }
 
   .hero-logo-link:hover {
