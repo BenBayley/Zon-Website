@@ -330,6 +330,7 @@ a:hover {
 }
 
 .project-showcase,
+.instagram-feed,
 .other-games {
   padding: clamp(2rem, 7vw, 7rem) clamp(1rem, 5vw, 6rem);
 }
@@ -525,6 +526,225 @@ a:hover {
   margin: clamp(1rem, 4vw, 4rem) auto 0;
   max-width: 62rem;
   text-align: center;
+}
+
+.instagram-feed {
+  background:
+    radial-gradient(circle at top left, rgba(65, 255, 176, 0.1), transparent 28%),
+    linear-gradient(180deg, rgba(8, 8, 10, 0.94), rgba(2, 2, 3, 1));
+}
+
+.instagram-feed-shell {
+  margin: 0 auto;
+  max-width: 76rem;
+}
+
+.instagram-feed-header {
+  align-items: flex-end;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: space-between;
+  margin-bottom: clamp(1.5rem, 4vw, 3rem);
+}
+
+.instagram-feed-copy {
+  max-width: 42rem;
+}
+
+.instagram-feed-copy h2 {
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  line-height: 1.02;
+  margin: 0 0 0.85rem;
+  text-transform: uppercase;
+}
+
+.instagram-feed-copy p {
+  color: #d7dde3;
+  margin: 0;
+}
+
+.instagram-feed-link {
+  white-space: nowrap;
+}
+
+.instagram-feed-status {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.instagram-feed-meta {
+  color: #9fe6c6;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.instagram-feed-meta time {
+  color: #f7fbff;
+}
+
+.instagram-status-badge {
+  background: rgba(65, 255, 176, 0.12);
+  border: 1px solid rgba(65, 255, 176, 0.34);
+  border-radius: 999px;
+  color: #41ffb0;
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0.35rem 0.65rem;
+  text-transform: uppercase;
+}
+
+.instagram-feed-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.instagram-card {
+  background: linear-gradient(180deg, rgba(11, 12, 16, 0.94), rgba(5, 6, 8, 0.96));
+  border: 1px solid rgba(247, 251, 255, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 1rem 2.2rem rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.instagram-card:hover,
+.instagram-card:focus-visible {
+  border-color: rgba(65, 255, 176, 0.4);
+  box-shadow: 0 1.25rem 2.6rem rgba(0, 0, 0, 0.28);
+  transform: translateY(-3px);
+}
+
+.instagram-card-media {
+  aspect-ratio: 4 / 5;
+  background: #050608;
+  overflow: hidden;
+  position: relative;
+}
+
+.instagram-card-media img {
+  height: 100%;
+  object-fit: cover;
+  transition: filter 280ms ease, transform 280ms ease;
+  width: 100%;
+}
+
+.instagram-card:hover .instagram-card-media img,
+.instagram-card:focus-visible .instagram-card-media img {
+  filter: saturate(1.06);
+  transform: scale(1.04);
+}
+
+.instagram-card-type {
+  background: rgba(2, 2, 3, 0.8);
+  border: 1px solid rgba(247, 251, 255, 0.14);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  padding: 0.45rem 0.65rem;
+  position: absolute;
+  right: 0.8rem;
+  text-transform: uppercase;
+  top: 0.8rem;
+}
+
+.instagram-card-body {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem 1rem 1.15rem;
+}
+
+.instagram-card-body time {
+  color: #41ffb0;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.instagram-card-body p {
+  color: #e6eef4;
+  display: -webkit-box;
+  margin: 0;
+  min-height: 4.5em;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.instagram-feed-panel {
+  align-items: center;
+  background: linear-gradient(160deg, rgba(10, 11, 14, 0.98), rgba(3, 4, 6, 0.96));
+  border: 1px solid rgba(247, 251, 255, 0.12);
+  border-radius: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  justify-content: space-between;
+  padding: 1.25rem 1.4rem;
+}
+
+.instagram-feed-panel h3 {
+  font-size: 1.15rem;
+  margin: 0 0 0.45rem;
+  text-transform: uppercase;
+}
+
+.instagram-feed-panel p {
+  color: #d7dde3;
+  margin: 0;
+  max-width: 36rem;
+}
+
+.instagram-feed-grid-loading {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.instagram-card-skeleton {
+  border: 1px solid rgba(247, 251, 255, 0.08);
+  pointer-events: none;
+}
+
+.instagram-card-skeleton .instagram-card-media,
+.instagram-skeleton-line {
+  animation: instagram-skeleton-shift 1.4s linear infinite;
+  background:
+    linear-gradient(90deg, rgba(18, 20, 24, 0.95), rgba(34, 38, 44, 0.95), rgba(18, 20, 24, 0.95));
+  background-size: 200% 100%;
+}
+
+.instagram-card-skeleton .instagram-card-body {
+  gap: 0.65rem;
+}
+
+.instagram-skeleton-line {
+  border-radius: 999px;
+  height: 0.75rem;
+}
+
+.instagram-skeleton-line.is-short {
+  width: 34%;
+}
+
+.instagram-skeleton-line.is-long {
+  width: 82%;
+}
+
+@keyframes instagram-skeleton-shift {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
 }
 
 .steam-widget-panel {
@@ -729,6 +949,7 @@ a:hover {
   }
 
   .project-showcase,
+  .instagram-feed,
   .other-games {
     padding: 2.5rem 1rem;
   }
@@ -764,6 +985,22 @@ a:hover {
 
   .steam-callout {
     margin-top: 2.5rem;
+  }
+
+  .instagram-feed-header,
+  .instagram-feed-panel {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .instagram-feed-header .btn,
+  .instagram-feed-panel .btn {
+    width: auto;
+  }
+
+  .instagram-feed-grid,
+  .instagram-feed-grid-loading {
+    grid-template-columns: 1fr;
   }
 
   .steam-widget-panel {

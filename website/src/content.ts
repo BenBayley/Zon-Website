@@ -48,5 +48,20 @@ export const steamMedia = {
 } as const;
 
 export const portfolioLinks = {
-  itch: 'https://bsharp21.itch.io/'
+  itch: 'https://bsharp21.itch.io/',
+  instagram: 'https://www.instagram.com/'
+} as const;
+
+export const socialFeed = {
+  instagram: {
+    eyebrow: 'Behind the scenes',
+    title: 'Latest from Instagram',
+    description: 'Development snapshots, short clips, and progress moments from the current Zon build.',
+    openLabel: 'Open Instagram',
+    loadingLabel: 'Loading latest Instagram posts',
+    emptyTitle: 'Fresh posts land here automatically',
+    emptyBody: 'The feed is connected, but there are no cached posts to show yet. Open the profile directly in the meantime.',
+    unavailableTitle: 'Instagram feed temporarily offline',
+    unavailableBody: 'Recent posts are synced in the background. If the feed API is unavailable, the profile link still works.'
+  }
 } as const;

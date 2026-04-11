@@ -1,62 +1,131 @@
-import type { PointerEvent } from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { portfolioLinks, steamMedia } from './content';
+import type { PointerEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { portfolioLinks, socialFeed, steamMedia } from './content'
 
-const { carouselImages, logo, poster, storeUrl, trailer, widgetUrl } = steamMedia;
-const benBayleyIcon = new URL('./assets/BenBayleyIconCurrent.png', import.meta.url).href;
-const carouselIntervalMs = 4000;
-const trailerFocusVolume = 0.35;
+const { carouselImages, logo, poster, storeUrl, trailer, widgetUrl } = steamMedia
+const benBayleyIcon = new URL('./assets/BenBayleyIconCurrent.png', import.meta.url).href
+const carouselIntervalMs = 4000
+const trailerFocusVolume = 0.35
+const socialApiBaseUrl = resolveSocialApiBaseUrl()
+const instagramFeedEndpoint = socialApiBaseUrl
+  ? new URL('api/social/instagram-feed', socialApiBaseUrl).toString()
+  : null
+const instagramDateFormatter = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+})
+
+type InstagramFeedItem = {
+  id: string
+  permalink: string
+  caption?: string | null
+  mediaType: string
+  mediaUrl: string
+  thumbnailUrl?: string | null
+  timestampUtc: string
+}
+
+type InstagramFeedResponse = {
+  status: 'ok' | 'stale' | 'unavailable'
+  source: string
+  profileUrl: string
+  fetchedAtUtc?: string | null
+  items: InstagramFeedItem[]
+}
+
+function resolveSocialApiBaseUrl() {
+  const configuredUrl = import.meta.env.VITE_SOCIAL_API_BASE_URL?.trim()
+  if (!configuredUrl) {
+    return null
+  }
+
+  try {
+    const normalizedUrl = configuredUrl.endsWith('/') ? configuredUrl : `${configuredUrl}/`
+    return new URL(normalizedUrl).toString()
+  } catch {
+    return null
+  }
+}
+
+function formatInstagramDate(timestampUtc: string) {
+  return instagramDateFormatter.format(new Date(timestampUtc))
+}
+
+function getInstagramCardImage(item: InstagramFeedItem) {
+  return item.thumbnailUrl ?? item.mediaUrl
+}
+
+function getInstagramAltText(item: InstagramFeedItem) {
+  const compactCaption = item.caption?.replace(/\s+/g, ' ').trim()
+  if (!compactCaption) {
+    return 'Recent Instagram post'
+  }
+
+  return `Instagram post: ${compactCaption.slice(0, 96)}${compactCaption.length > 96 ? '...' : ''}`
+}
+
+function getInstagramMediaTypeLabel(mediaType: string) {
+  switch (mediaType) {
+    case 'VIDEO':
+      return 'Video'
+    case 'CAROUSEL_ALBUM':
+      return 'Carousel'
+    default:
+      return 'Image'
+  }
+}
 
 function SteamImageCarousel() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const carouselIntervalRef = useRef<number | undefined>(undefined);
+  const [activeIndex, setActiveIndex] = useState(0)
+  const carouselIntervalRef = useRef<number | undefined>(undefined)
 
   function restartCarouselInterval() {
     if (carouselIntervalRef.current !== undefined) {
-      window.clearInterval(carouselIntervalRef.current);
+      window.clearInterval(carouselIntervalRef.current)
     }
 
     carouselIntervalRef.current = window.setInterval(() => {
-      setActiveIndex((currentIndex) => (currentIndex + 1) % carouselImages.length);
-    }, carouselIntervalMs);
+      setActiveIndex((currentIndex) => (currentIndex + 1) % carouselImages.length)
+    }, carouselIntervalMs)
   }
 
   function tiltCarousel(event: PointerEvent<HTMLElement>) {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const relativeX = (event.clientX - bounds.left) / bounds.width;
-    const relativeY = (event.clientY - bounds.top) / bounds.height;
-    const rotateY = (relativeX - 0.5) * 5;
-    const rotateX = (0.5 - relativeY) * 4;
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const relativeX = (event.clientX - bounds.left) / bounds.width
+    const relativeY = (event.clientY - bounds.top) / bounds.height
+    const rotateY = (relativeX - 0.5) * 5
+    const rotateX = (0.5 - relativeY) * 4
 
-    event.currentTarget.style.setProperty('--carousel-tilt-x', `${rotateX.toFixed(2)}deg`);
-    event.currentTarget.style.setProperty('--carousel-tilt-y', `${rotateY.toFixed(2)}deg`);
+    event.currentTarget.style.setProperty('--carousel-tilt-x', `${rotateX.toFixed(2)}deg`)
+    event.currentTarget.style.setProperty('--carousel-tilt-y', `${rotateY.toFixed(2)}deg`)
   }
 
   function resetCarouselTilt(event: PointerEvent<HTMLElement>) {
-    event.currentTarget.style.setProperty('--carousel-tilt-x', '0deg');
-    event.currentTarget.style.setProperty('--carousel-tilt-y', '0deg');
+    event.currentTarget.style.setProperty('--carousel-tilt-x', '0deg')
+    event.currentTarget.style.setProperty('--carousel-tilt-y', '0deg')
   }
 
   useEffect(() => {
-    restartCarouselInterval();
+    restartCarouselInterval()
 
     return () => {
       if (carouselIntervalRef.current !== undefined) {
-        window.clearInterval(carouselIntervalRef.current);
+        window.clearInterval(carouselIntervalRef.current)
       }
-    };
-  }, []);
+    }
+  }, [])
 
   function showPreviousImage() {
-    restartCarouselInterval();
+    restartCarouselInterval()
     setActiveIndex((currentIndex) => (
       currentIndex === 0 ? carouselImages.length - 1 : currentIndex - 1
-    ));
+    ))
   }
 
   function showNextImage() {
-    restartCarouselInterval();
-    setActiveIndex((currentIndex) => (currentIndex + 1) % carouselImages.length);
+    restartCarouselInterval()
+    setActiveIndex((currentIndex) => (currentIndex + 1) % carouselImages.length)
   }
 
   return (
@@ -90,226 +159,362 @@ function SteamImageCarousel() {
         ))}
       </div>
     </article>
-  );
+  )
+}
+
+function InstagramFeedSection() {
+  const instagramContent = socialFeed.instagram
+  const [feedState, setFeedState] = useState<'loading' | 'ready' | 'unavailable'>(
+    instagramFeedEndpoint ? 'loading' : 'unavailable'
+  )
+  const [feed, setFeed] = useState<InstagramFeedResponse | null>(null)
+
+  useEffect(() => {
+    const endpoint = instagramFeedEndpoint ?? ''
+    if (endpoint.length === 0) {
+      return undefined
+    }
+
+    const abortController = new AbortController()
+
+    async function loadFeed() {
+      try {
+        const response = await fetch(endpoint, { signal: abortController.signal })
+        if (!response.ok) {
+          throw new Error(`Instagram feed request failed with ${response.status}`)
+        }
+
+        const payload = await response.json() as InstagramFeedResponse
+        if (abortController.signal.aborted) {
+          return
+        }
+
+        setFeed(payload)
+        setFeedState(payload.status === 'unavailable' ? 'unavailable' : 'ready')
+      } catch {
+        if (abortController.signal.aborted) {
+          return
+        }
+
+        setFeed(null)
+        setFeedState('unavailable')
+      }
+    }
+
+    void loadFeed()
+
+    return () => {
+      abortController.abort()
+    }
+  }, [])
+
+  const profileUrl = feed?.profileUrl ?? portfolioLinks.instagram
+  const isStale = feed?.status === 'stale'
+  const hasItems = feedState === 'ready' && (feed?.items.length ?? 0) > 0
+
+  return (
+    <section id="instagram-feed" className="instagram-feed" aria-labelledby="instagram-feed-heading">
+      <div className="instagram-feed-shell">
+        <div className="instagram-feed-header">
+          <div className="instagram-feed-copy">
+            <p className="portfolio-kicker">{instagramContent.eyebrow}</p>
+            <h2 id="instagram-feed-heading">{instagramContent.title}</h2>
+            <p>{instagramContent.description}</p>
+          </div>
+          <a className="btn btn-secondary instagram-feed-link" href={profileUrl} target="_blank" rel="noreferrer">
+            {instagramContent.openLabel}
+          </a>
+        </div>
+
+        {feedState === 'loading' ? (
+          <div className="instagram-feed-grid instagram-feed-grid-loading" aria-live="polite" aria-busy="true" aria-label={instagramContent.loadingLabel}>
+            {[0, 1, 2].map((cardIndex) => (
+              <div key={cardIndex} className="instagram-card instagram-card-skeleton" aria-hidden="true">
+                <div className="instagram-card-media" />
+                <div className="instagram-card-body">
+                  <div className="instagram-skeleton-line is-short" />
+                  <div className="instagram-skeleton-line is-long" />
+                  <div className="instagram-skeleton-line is-long" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {hasItems ? (
+          <>
+            {feed?.fetchedAtUtc ? (
+              <div className="instagram-feed-status">
+                <p className="instagram-feed-meta">
+                  {isStale ? 'Showing the latest cached sync from ' : 'Last synced '}
+                  <time dateTime={feed.fetchedAtUtc}>{formatInstagramDate(feed.fetchedAtUtc)}</time>
+                </p>
+                {isStale ? <span className="instagram-status-badge">Cached feed</span> : null}
+              </div>
+            ) : null}
+
+            <div className="instagram-feed-grid">
+              {feed?.items.map((item) => (
+                <a key={item.id} className="instagram-card" href={item.permalink} target="_blank" rel="noreferrer">
+                  <div className="instagram-card-media">
+                    <img src={getInstagramCardImage(item)} alt={getInstagramAltText(item)} loading="lazy" />
+                    <span className="instagram-card-type">{getInstagramMediaTypeLabel(item.mediaType)}</span>
+                  </div>
+                  <div className="instagram-card-body">
+                    <time dateTime={item.timestampUtc}>{formatInstagramDate(item.timestampUtc)}</time>
+                    <p>{item.caption?.trim() || 'Open the full post on Instagram.'}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </>
+        ) : null}
+
+        {feedState === 'ready' && !hasItems ? (
+          <div className="instagram-feed-panel" role="status">
+            <div>
+              <h3>{instagramContent.emptyTitle}</h3>
+              <p>{instagramContent.emptyBody}</p>
+            </div>
+            <a className="btn btn-secondary" href={profileUrl} target="_blank" rel="noreferrer">
+              {instagramContent.openLabel}
+            </a>
+          </div>
+        ) : null}
+
+        {feedState === 'unavailable' ? (
+          <div className="instagram-feed-panel" role="status">
+            <div>
+              <h3>{instagramContent.unavailableTitle}</h3>
+              <p>{instagramContent.unavailableBody}</p>
+            </div>
+            <a className="btn btn-secondary" href={profileUrl} target="_blank" rel="noreferrer">
+              {instagramContent.openLabel}
+            </a>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  )
 }
 
 function App() {
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
-  const heroLogoLinkRef = useRef<HTMLAnchorElement>(null);
-  const [isTrailerFocused, setIsTrailerFocused] = useState(false);
-  const [trailerVolume, setTrailerVolume] = useState(trailerFocusVolume);
+  const heroVideoRef = useRef<HTMLVideoElement>(null)
+  const heroLogoLinkRef = useRef<HTMLAnchorElement>(null)
+  const [isTrailerFocused, setIsTrailerFocused] = useState(false)
+  const [trailerVolume, setTrailerVolume] = useState(trailerFocusVolume)
 
   function tiltHeroLogo(event: PointerEvent<HTMLAnchorElement>) {
     if (event.pointerType === 'touch') {
-      return;
+      return
     }
 
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const relativeX = (event.clientX - bounds.left) / bounds.width;
-    const relativeY = (event.clientY - bounds.top) / bounds.height;
-    const rotateY = (relativeX - 0.5) * 28;
-    const rotateX = (0.5 - relativeY) * 22;
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const relativeX = (event.clientX - bounds.left) / bounds.width
+    const relativeY = (event.clientY - bounds.top) / bounds.height
+    const rotateY = (relativeX - 0.5) * 28
+    const rotateX = (0.5 - relativeY) * 22
 
-    event.currentTarget.style.setProperty('--logo-tilt-x', `${rotateX.toFixed(2)}deg`);
-    event.currentTarget.style.setProperty('--logo-tilt-y', `${rotateY.toFixed(2)}deg`);
+    event.currentTarget.style.setProperty('--logo-tilt-x', `${rotateX.toFixed(2)}deg`)
+    event.currentTarget.style.setProperty('--logo-tilt-y', `${rotateY.toFixed(2)}deg`)
   }
 
   function resetHeroLogoTilt(event: PointerEvent<HTMLAnchorElement>) {
     if (event.pointerType === 'touch') {
-      return;
+      return
     }
 
-    event.currentTarget.style.setProperty('--logo-tilt-x', '0deg');
-    event.currentTarget.style.setProperty('--logo-tilt-y', '0deg');
+    event.currentTarget.style.setProperty('--logo-tilt-x', '0deg')
+    event.currentTarget.style.setProperty('--logo-tilt-y', '0deg')
   }
 
   useEffect(() => {
-    const heroLogoLink = heroLogoLinkRef.current;
-    const mobilePointerQuery = window.matchMedia('(pointer: coarse)');
-    const mobileHoverQuery = window.matchMedia('(hover: none)');
+    const heroLogoLink = heroLogoLinkRef.current
+    const mobilePointerQuery = window.matchMedia('(pointer: coarse)')
+    const mobileHoverQuery = window.matchMedia('(hover: none)')
     const isMobileLike = window.innerWidth <= 720
       || navigator.maxTouchPoints > 0
       || mobilePointerQuery.matches
-      || mobileHoverQuery.matches;
+      || mobileHoverQuery.matches
 
     if (!heroLogoLink || !isMobileLike) {
-      return undefined;
+      return undefined
     }
 
-    const mobileHeroLogoLink = heroLogoLink;
-    let touchStartX: number | undefined;
-    let touchStartY: number | undefined;
-    let isTouchActive = false;
-    let settleTimeoutId: number | undefined;
-    let animationFrameId: number | undefined;
-    let currentRotateX = 0;
-    let currentRotateY = 0;
-    let targetRotateX = 0;
-    let targetRotateY = 0;
-    const maxTilt = 38;
-    const deadZonePx = 8;
-    const maxDragDistancePx = 220;
+    const mobileHeroLogoLink = heroLogoLink
+    let touchStartX: number | undefined
+    let touchStartY: number | undefined
+    let isTouchActive = false
+    let settleTimeoutId: number | undefined
+    let animationFrameId: number | undefined
+    let currentRotateX = 0
+    let currentRotateY = 0
+    let targetRotateX = 0
+    let targetRotateY = 0
+    const maxTilt = 38
+    const deadZonePx = 8
+    const maxDragDistancePx = 220
 
     function normalizeTouchOffset(offset: number) {
-      const absOffset = Math.abs(offset);
+      const absOffset = Math.abs(offset)
 
       if (absOffset <= deadZonePx) {
-        return 0;
+        return 0
       }
 
-      const normalizedOffset = (absOffset - deadZonePx) / (maxDragDistancePx - deadZonePx);
-      const clampedOffset = Math.min(1, normalizedOffset);
-      return Math.sign(offset) * Math.pow(clampedOffset, 1.15);
+      const normalizedOffset = (absOffset - deadZonePx) / (maxDragDistancePx - deadZonePx)
+      const clampedOffset = Math.min(1, normalizedOffset)
+      return Math.sign(offset) * Math.pow(clampedOffset, 1.15)
     }
 
     function settleHeroLogo() {
-      queueHeroLogoTilt(0, 0);
+      queueHeroLogoTilt(0, 0)
     }
 
     function renderHeroLogoTilt() {
-      currentRotateX += (targetRotateX - currentRotateX) * 0.1;
-      currentRotateY += (targetRotateY - currentRotateY) * 0.1;
+      currentRotateX += (targetRotateX - currentRotateX) * 0.1
+      currentRotateY += (targetRotateY - currentRotateY) * 0.1
 
-      mobileHeroLogoLink.style.setProperty('--logo-tilt-x', `${currentRotateX.toFixed(2)}deg`);
-      mobileHeroLogoLink.style.setProperty('--logo-tilt-y', `${currentRotateY.toFixed(2)}deg`);
+      mobileHeroLogoLink.style.setProperty('--logo-tilt-x', `${currentRotateX.toFixed(2)}deg`)
+      mobileHeroLogoLink.style.setProperty('--logo-tilt-y', `${currentRotateY.toFixed(2)}deg`)
 
       const isSettled = Math.abs(targetRotateX - currentRotateX) < 0.02
-        && Math.abs(targetRotateY - currentRotateY) < 0.02;
+        && Math.abs(targetRotateY - currentRotateY) < 0.02
 
       if (isSettled) {
-        currentRotateX = targetRotateX;
-        currentRotateY = targetRotateY;
-        mobileHeroLogoLink.style.setProperty('--logo-tilt-x', `${currentRotateX.toFixed(2)}deg`);
-        mobileHeroLogoLink.style.setProperty('--logo-tilt-y', `${currentRotateY.toFixed(2)}deg`);
-        animationFrameId = undefined;
-        return;
+        currentRotateX = targetRotateX
+        currentRotateY = targetRotateY
+        mobileHeroLogoLink.style.setProperty('--logo-tilt-x', `${currentRotateX.toFixed(2)}deg`)
+        mobileHeroLogoLink.style.setProperty('--logo-tilt-y', `${currentRotateY.toFixed(2)}deg`)
+        animationFrameId = undefined
+        return
       }
 
-      animationFrameId = window.requestAnimationFrame(renderHeroLogoTilt);
+      animationFrameId = window.requestAnimationFrame(renderHeroLogoTilt)
     }
 
     function queueHeroLogoTilt(rawRotateX: number, rawRotateY: number) {
-      const vectorMagnitude = Math.hypot(rawRotateX, rawRotateY);
-      const clampScale = vectorMagnitude > maxTilt ? maxTilt / vectorMagnitude : 1;
-      targetRotateX = rawRotateX * clampScale;
-      targetRotateY = rawRotateY * clampScale;
+      const vectorMagnitude = Math.hypot(rawRotateX, rawRotateY)
+      const clampScale = vectorMagnitude > maxTilt ? maxTilt / vectorMagnitude : 1
+      targetRotateX = rawRotateX * clampScale
+      targetRotateY = rawRotateY * clampScale
 
       if (animationFrameId === undefined) {
-        animationFrameId = window.requestAnimationFrame(renderHeroLogoTilt);
+        animationFrameId = window.requestAnimationFrame(renderHeroLogoTilt)
       }
 
       if (settleTimeoutId !== undefined) {
-        window.clearTimeout(settleTimeoutId);
+        window.clearTimeout(settleTimeoutId)
       }
 
       if (!isTouchActive) {
-        settleTimeoutId = window.setTimeout(settleHeroLogo, 320);
+        settleTimeoutId = window.setTimeout(settleHeroLogo, 320)
       }
     }
 
     function handleTouchStart(event: TouchEvent) {
-      isTouchActive = true;
-      touchStartX = event.touches[0]?.clientX;
-      touchStartY = event.touches[0]?.clientY;
-      mobileHeroLogoLink.classList.add('is-mobile-tilting');
+      isTouchActive = true
+      touchStartX = event.touches[0]?.clientX
+      touchStartY = event.touches[0]?.clientY
+      mobileHeroLogoLink.classList.add('is-mobile-tilting')
 
       if (settleTimeoutId !== undefined) {
-        window.clearTimeout(settleTimeoutId);
-        settleTimeoutId = undefined;
+        window.clearTimeout(settleTimeoutId)
+        settleTimeoutId = undefined
       }
     }
 
     function handleTouchMove(event: TouchEvent) {
-      const touchX = event.touches[0]?.clientX;
-      const touchY = event.touches[0]?.clientY;
+      const touchX = event.touches[0]?.clientX
+      const touchY = event.touches[0]?.clientY
 
       if (touchX === undefined || touchY === undefined) {
-        return;
+        return
       }
 
       if (touchStartX === undefined || touchStartY === undefined) {
-        touchStartX = touchX;
-        touchStartY = touchY;
-        return;
+        touchStartX = touchX
+        touchStartY = touchY
+        return
       }
 
-      const touchOffsetX = touchX - touchStartX;
-      const touchOffsetY = touchY - touchStartY;
+      const touchOffsetX = touchX - touchStartX
+      const touchOffsetY = touchY - touchStartY
 
       if (Math.abs(touchOffsetX) < 1 && Math.abs(touchOffsetY) < 1) {
-        return;
+        return
       }
 
-      const normalizedOffsetX = normalizeTouchOffset(touchOffsetX);
-      const normalizedOffsetY = normalizeTouchOffset(touchOffsetY);
+      const normalizedOffsetX = normalizeTouchOffset(touchOffsetX)
+      const normalizedOffsetY = normalizeTouchOffset(touchOffsetY)
 
-      queueHeroLogoTilt(normalizedOffsetY * maxTilt, normalizedOffsetX * (maxTilt * 0.9));
+      queueHeroLogoTilt(normalizedOffsetY * maxTilt, normalizedOffsetX * (maxTilt * 0.9))
     }
 
     function handleTouchEnd() {
-      isTouchActive = false;
-      touchStartX = undefined;
-      touchStartY = undefined;
-      mobileHeroLogoLink.classList.remove('is-mobile-tilting');
+      isTouchActive = false
+      touchStartX = undefined
+      touchStartY = undefined
+      mobileHeroLogoLink.classList.remove('is-mobile-tilting')
 
       if (settleTimeoutId !== undefined) {
-        window.clearTimeout(settleTimeoutId);
+        window.clearTimeout(settleTimeoutId)
       }
 
-      settleTimeoutId = window.setTimeout(settleHeroLogo, 180);
+      settleTimeoutId = window.setTimeout(settleHeroLogo, 180)
     }
 
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    window.addEventListener('touchend', handleTouchEnd, { passive: true });
-    window.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true })
+    window.addEventListener('touchmove', handleTouchMove, { passive: true })
+    window.addEventListener('touchend', handleTouchEnd, { passive: true })
+    window.addEventListener('touchcancel', handleTouchEnd, { passive: true })
 
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('touchcancel', handleTouchEnd);
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('touchend', handleTouchEnd)
+      window.removeEventListener('touchcancel', handleTouchEnd)
 
       if (settleTimeoutId !== undefined) {
-        window.clearTimeout(settleTimeoutId);
+        window.clearTimeout(settleTimeoutId)
       }
 
       if (animationFrameId !== undefined) {
-        window.cancelAnimationFrame(animationFrameId);
+        window.cancelAnimationFrame(animationFrameId)
       }
-    };
-  }, []);
+    }
+  }, [])
 
   function watchTrailer() {
-    const heroVideo = heroVideoRef.current;
+    const heroVideo = heroVideoRef.current
 
     if (heroVideo) {
-      heroVideo.muted = false;
-      heroVideo.volume = trailerVolume;
-      void heroVideo.play();
+      heroVideo.muted = false
+      heroVideo.volume = trailerVolume
+      void heroVideo.play()
     }
 
-    setIsTrailerFocused(true);
+    setIsTrailerFocused(true)
   }
 
   function restoreHeroOverlay() {
-    const heroVideo = heroVideoRef.current;
+    const heroVideo = heroVideoRef.current
 
     if (heroVideo) {
-      heroVideo.muted = true;
+      heroVideo.muted = true
     }
 
-    setIsTrailerFocused(false);
+    setIsTrailerFocused(false)
   }
 
   function changeTrailerVolume(volume: number) {
-    const heroVideo = heroVideoRef.current;
+    const heroVideo = heroVideoRef.current
 
-    setTrailerVolume(volume);
+    setTrailerVolume(volume)
 
     if (heroVideo) {
-      heroVideo.volume = volume;
-      heroVideo.muted = volume === 0;
+      heroVideo.volume = volume
+      heroVideo.muted = volume === 0
     }
   }
 
@@ -325,6 +530,7 @@ function App() {
         </a>
         <nav className="topbar-links" aria-label="Primary">
           <a href="#latest-project">Zon</a>
+          <a href="#instagram-feed">Instagram</a>
           <a href="#other-games">Itch.io</a>
           <a href={storeUrl} target="_blank" rel="noreferrer">
             Steam
@@ -428,6 +634,8 @@ function App() {
           </div>
         </section>
 
+        <InstagramFeedSection />
+
         <section id="other-games" className="other-games" aria-label="Other games by Ben Bayley">
           <div className="itch-card">
             <div>
@@ -455,7 +663,7 @@ function App() {
         </div>
       </footer>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

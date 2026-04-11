@@ -1,6 +1,6 @@
 # Zon Website (Static React + Vite)
 
-A static, Cloudflare Pages-friendly marketing site for **Zon**, based on publicly available Steam content and repo context.
+A static, Cloudflare Pages-friendly marketing site for **Zon**, based on publicly available Steam content and repo context. The site now also supports an optional Instagram section powered by the C# backend under `../backend/`.
 
 ## Stack
 - React
@@ -12,6 +12,12 @@ A static, Cloudflare Pages-friendly marketing site for **Zon**, based on publicl
 cd website
 npm install
 npm run dev
+```
+
+If you want the homepage Instagram section to call the local backend, copy `.env.example` to `.env` and set:
+
+```bash
+VITE_SOCIAL_API_BASE_URL=http://localhost:7071
 ```
 
 ## Share with Cloudflare Tunnel
@@ -47,14 +53,18 @@ Create a Cloudflare Pages project pointed at this repository and use:
 - **Build output directory:** `website/dist`
 - **Root directory (recommended):** `website`
 
+If you deploy the Instagram backend, also set the Cloudflare Pages environment variable:
+
+- `VITE_SOCIAL_API_BASE_URL=https://<your-azure-functions-host>`
+
 If you set the Pages root directory to `website`, your build output directory should be `dist`.
 
 ## Content/source notes
 - Gameplay copy and claims are based on the Steam store listing for Zon (`app/3651110`).
 - Steam media is referenced via official Steam CDN image URLs and an official Steam widget embed.
-- Instagram is linked as a social channel; the page design tone uses a neon sci-fi action aesthetic aligned with the game's public branding direction.
+- The Instagram section reads from the optional C# backend in `../backend/`, which is intended to use Meta's official API rather than scraping.
 
 ## Assumptions
-- No backend is required.
-- No runtime scraping is used.
+- The frontend remains a static site on Cloudflare Pages.
+- The optional Instagram backend is hosted separately and no runtime scraping is used.
 - External media references are public Steam-hosted assets.

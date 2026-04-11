@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "Instagram__AccessToken": "replace-with-a-meta-access-token",
+    "Instagram__AccountId": "replace-with-your-instagram-business-account-id",
+    "Instagram__ProfileUrl": "https://www.instagram.com/your-handle/",
+    "Instagram__ItemLimit": "6",
+    "Frontend__AllowedOrigin": "https://benbayley.co.uk"
+  }
+}
