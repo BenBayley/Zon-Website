@@ -114,7 +114,7 @@ a:hover {
   isolation: isolate;
   min-height: 100svh;
   overflow: hidden;
-  padding: 7rem clamp(1rem, 5vw, 6rem) clamp(2rem, 7vh, 6rem);
+  padding: 7rem clamp(1rem, 5vw, 6rem) clamp(1rem, 4vh, 3.25rem);
   position: relative;
 }
 
@@ -650,31 +650,32 @@ a:hover {
   }
 
   .hero {
-    min-height: auto;
-    padding-bottom: 2.5rem;
-    padding-top: 8.2rem;
+    min-height: 100svh;
+    padding-bottom: 1.25rem;
+    padding-top: 6.7rem;
   }
 
   .hero-content {
-    margin-top: 0.9rem;
+    margin-top: 0;
+    max-width: 28rem;
   }
 
   .portfolio-kicker {
-    margin-bottom: 0.7rem;
-    position: relative;
-    top: -2.2rem;
+    font-size: 0.72rem;
+    margin-bottom: 0.35rem;
+    position: static;
   }
 
   .hero-logo-link {
     display: block;
-    margin: 0 auto 1.2rem;
+    margin: 0 auto 0.65rem;
     width: fit-content;
     transform: perspective(700px) rotateX(var(--logo-tilt-x)) rotateY(var(--logo-tilt-y));
     transition: none;
   }
 
   .hero-logo {
-    width: min(23.5rem, 88vw);
+    width: min(18rem, 74vw);
   }
 
   .hero-logo-link:hover {
@@ -699,15 +700,27 @@ a:hover {
   }
 
   .tagline {
-    font-size: 1.35rem;
+    font-size: 1.05rem;
+    margin-bottom: 0.65rem;
   }
 
   .brand-mark span {
     font-size: 0.82rem;
   }
 
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    margin-bottom: 0.35rem;
+  }
+
   .hero-lede {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-actions {
+    gap: 0.65rem;
   }
 
   .steam-note {
@@ -758,7 +771,9 @@ a:hover {
 
   .btn {
     text-align: center;
-    width: 100%;
+    flex: 1 1 0;
+    padding: 0.75rem 0.7rem;
+    width: auto;
   }
 
   .image-strip {
