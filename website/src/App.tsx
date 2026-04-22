@@ -315,28 +315,29 @@ function App() {
 
   return (
     <div>
-      <a className="skip-link" href="#latest-project">
-        Skip to latest project
+      <a className="skip-link" href="#main-content">
+        Skip to main content
       </a>
 
       <header className="topbar">
-        <a href="#latest-project" className="brand-mark" aria-label="Ben Bayley portfolio home">
-          <img src={benBayleyIcon} alt="Ben Bayley" />
+        <a href="#latest-project" className="brand-mark" aria-label="Zon home">
+          <img src={benBayleyIcon} alt="" />
+          <span>Ben Bayley</span>
         </a>
         <nav className="topbar-links" aria-label="Primary">
           <a href="#latest-project">Zon</a>
-          <a href="#other-games">Itch.io</a>
+          <a href="#other-games">Games</a>
           <a href={storeUrl} target="_blank" rel="noreferrer">
             Steam
           </a>
           <a href={portfolioLinks.itch} className="nav-cta" target="_blank" rel="noreferrer">
-            Games
+            itch.io
           </a>
         </nav>
       </header>
 
-      <main>
-        <section id="latest-project" className={`hero ${isTrailerFocused ? 'is-trailer-focused' : ''}`} aria-label="Ben Bayley latest project, Zon">
+      <main id="main-content">
+        <section id="latest-project" className={`hero ${isTrailerFocused ? 'is-trailer-focused' : ''}`} aria-label="Zon hero">
           <div className="hero-backdrop" aria-hidden="true">
             <img className="hero-poster" src={poster} alt="" />
             <video
@@ -357,7 +358,7 @@ function App() {
           <div className={`hero-shade ${isTrailerFocused ? 'is-hidden' : ''}`} aria-hidden="true" />
 
           <div className={`hero-content ${isTrailerFocused ? 'is-hidden' : ''}`}>
-            <p className="portfolio-kicker">Ben Bayley portfolio / latest project</p>
+            <p className="portfolio-kicker">Steam featured project</p>
             <a
               ref={heroLogoLinkRef}
               className="hero-logo-link"
@@ -370,7 +371,12 @@ function App() {
             >
               <img className="hero-logo" src={logo} alt="Zon" />
             </a>
+            <p className="hero-eyebrow">Featured project</p>
             <p className="tagline">Bullet hell. Base warfare. Neon chaos.</p>
+            <p className="hero-lede">
+              A neon sci-fi action game built around bullet hell pressure, base warfare, and a direct Steam wishlist
+              path.
+            </p>
             <div className="hero-actions">
               <a className="btn btn-primary" href={storeUrl} target="_blank" rel="noreferrer">
                 Wishlist on Steam
@@ -410,7 +416,7 @@ function App() {
         <section className="project-showcase" aria-label="Zon project media">
           <div className="gallery-heading">
             <a href={storeUrl} target="_blank" rel="noreferrer">
-              Latest project on Steam
+              Visit Zon on Steam
             </a>
           </div>
 
@@ -428,12 +434,15 @@ function App() {
           </div>
         </section>
 
-        <section id="other-games" className="other-games" aria-label="Other games by Ben Bayley">
+        <section id="other-games" className="other-games" aria-label="Other projects">
           <div className="itch-card">
             <div>
-              <p className="portfolio-kicker">Other games</p>
-              <h2>More from Ben Bayley</h2>
-              <p>Small experiments, playable builds, and earlier games live on itch.io.</p>
+              <p className="portfolio-kicker">Other projects</p>
+              <h2>More games and experiments</h2>
+              <p>
+                Small experiments, playable builds, and earlier releases live on itch.io alongside the current focus
+                on Zon.
+              </p>
             </div>
             <a className="btn btn-primary" href={portfolioLinks.itch} target="_blank" rel="noreferrer">
               Open itch.io
@@ -443,9 +452,9 @@ function App() {
       </main>
 
       <footer className="footer">
-        <img src={benBayleyIcon} alt="Ben Bayley" />
+        <img src={benBayleyIcon} alt="" />
         <div>
-          <p>Copyright Ben Bayley</p>
+          <p>Zon and other projects</p>
           <a href={portfolioLinks.itch} target="_blank" rel="noreferrer">
             itch.io
           </a>

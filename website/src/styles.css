@@ -70,10 +70,23 @@ a:hover {
   z-index: -1;
 }
 
+.brand-mark {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.7rem;
+}
+
 .brand-mark img {
   filter: drop-shadow(0 0 0.75rem rgba(65, 255, 176, 0.34));
   max-height: 3rem;
   width: auto;
+}
+
+.brand-mark span {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .topbar-links {
@@ -208,6 +221,22 @@ a:hover {
   margin: 0 0 1.2rem;
   max-width: 32rem;
   text-transform: uppercase;
+}
+
+.hero-eyebrow {
+  color: #41ffb0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.6rem;
+  text-transform: uppercase;
+}
+
+.hero-lede {
+  color: #d7dde3;
+  font-size: 1.02rem;
+  margin: 0 0 1rem;
+  max-width: 40rem;
 }
 
 .hero-actions {
@@ -671,6 +700,14 @@ a:hover {
 
   .tagline {
     font-size: 1.35rem;
+  }
+
+  .brand-mark span {
+    font-size: 0.82rem;
+  }
+
+  .hero-lede {
+    font-size: 0.95rem;
   }
 
   .steam-note {
