@@ -325,12 +325,12 @@ function App() {
           <span>Ben Bayley</span>
         </a>
         <nav className="topbar-links" aria-label="Primary">
-          <a href="#latest-project">Zon</a>
-          <a href="#other-games">Games</a>
-          <a href={storeUrl} target="_blank" rel="noreferrer">
+          <a className="topbar-link-mobile-hidden" href="#latest-project">Zon</a>
+          <a className="topbar-link-mobile-hidden" href="#other-games">Games</a>
+          <a className="topbar-link-mobile-primary" href={storeUrl} target="_blank" rel="noreferrer">
             Steam
           </a>
-          <a href={portfolioLinks.itch} className="nav-cta" target="_blank" rel="noreferrer">
+          <a className="nav-cta topbar-link-mobile-primary" href={portfolioLinks.itch} target="_blank" rel="noreferrer">
             itch.io
           </a>
         </nav>
@@ -440,8 +440,7 @@ function App() {
               <p className="portfolio-kicker">Other projects</p>
               <h2>More games and experiments</h2>
               <p>
-                Small experiments, playable builds, and earlier releases live on itch.io alongside the current focus
-                on Zon.
+                Small experiments, playable builds, and earlier releases live on itch.io.
               </p>
             </div>
             <a className="btn btn-primary" href={portfolioLinks.itch} target="_blank" rel="noreferrer">
